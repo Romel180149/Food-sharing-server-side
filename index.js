@@ -139,6 +139,61 @@ async function run() {
       const result = await foodCollection.insertOne(newFood);
       res.send(result);
     });
+    app.put("/food/:id", async (req, res) => {
+      const id = req.params.id;
+      const filter = { _id: new ObjectId(id) };
+      const options = { upsert: true };
+      const updatedFood = req.body;
+      const food = {
+        $set: {
+          name: updatedFood.name,
+          image: updatedFood.image,
+          location: updatedFood.location,
+          time: updatedFood.time,
+          notes: updatedFood.notes,
+        },
+      };
+      const result = await foodCollection.updateOne(filter, food, options);
+      res.send(result);
+    });
+
+    app.put("/foodRequest/:id", async (req, res) => {
+      const id = req.params.id;
+      const filter = { _id: new ObjectId(id) };
+      const options = { upsert: true };
+      const updatedFoodStatus = req.body;
+      const food = {
+        $set: {
+          status: updatedFoodStatus.status,
+        },
+      };
+      const result = await foodRequestCollection.updateOne(
+        filter,
+        food,
+        options
+      );
+      res.send(result);
+    });
+
+    app.post("/foodRequest", async (req, res) => {
+      const requestFood = req.body;
+      const result = await foodRequestCollection.insertOne(requestFood);
+      res.send(result);
+    });
+
+    app.delete("/foods/:id", async (req, res) => {
+      const id = req.params.id;
+      const queryId = { _id: new ObjectId(id) };
+      const result = await foodCollection.deleteOne(queryId);
+      res.send(result);
+    });
+
+    app.delete("/foodRequest/:id", async (req, res) => {
+      const id = req.params.id;
+      const queryId = { _id: new ObjectId(id) };
+      const result = await foodRequestCollection.deleteOne(queryId);
+      res.send(result);
+    });
     await client.db("admin").command({ ping: 1 });
     console.log("Pinged your deployment. You successfully connected to MongoDB!");
   } finally {
