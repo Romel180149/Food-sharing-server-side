@@ -78,6 +78,24 @@ async function run() {
         })
         .send({ success: true });
     });
+    app.post("/logout", async (req, res) => {
+      const user = req.body;
+      console.log("logging out", user);
+      res
+        .clearCookie("token", { maxAge: 0, sameSite: "none", secure: true })
+        .send({ success: true });
+    });
+
+    app.get("/foods", async (req, res) => {
+      const cursor = foodCollection.find();
+      const result = await cursor.toArray();
+      res.send(result);
+    });
+
+    app.get("/foodsCount", async (req, res) => {
+      const count = await foodCollection.estimatedDocumentCount();
+      res.send({ count });
+    });
     await client.db("admin").command({ ping: 1 });
     console.log("Pinged your deployment. You successfully connected to MongoDB!");
   } finally {
