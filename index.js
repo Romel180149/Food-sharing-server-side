@@ -8,6 +8,13 @@ const port= process.env.PORT || 5000;
 //middleware
 app.use(cors());
 app.use(express.json());
+app.use(
+  cors({
+    origin: ["http://localhost:5173"],
+    credentials: true,
+  })
+);
+
 
 
 
@@ -41,9 +48,9 @@ async function run() {
 // run().catch(console.dir);
 run().catch(console.dir);
 app.get('/', (req, res) => {
-    res.send('brand shop server is running')
+    res.send('Food sharing server is running')
 })
 
 app.listen(port, () => {
-    console.log(`brand shop is running on port: ${port}`)
+    console.log(`Food sharing is running on port: ${port}`)
 })
