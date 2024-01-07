@@ -96,6 +96,49 @@ async function run() {
       const count = await foodCollection.estimatedDocumentCount();
       res.send({ count });
     });
+    app.get("/food/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) };
+      const result = await foodCollection.findOne(query);
+      res.send(result);
+    });
+
+    app.get("/foodRequest", logger, verifyToken, async (req, res) => {
+      if (req.user.email !== req.query.email) {
+        return res.status(403).send({ message: "forbidden access" });
+      }
+      let query = {};
+      if (req.query?.email) {
+        query = { email: req.query.email };
+      }
+
+      const cursor = foodRequestCollection.find();
+      const result = await cursor.toArray();
+      res.send(result);
+    });
+
+    app.get("/foodRequest/:id", logger, verifyToken, async (req, res) => {
+      if (req.user.email !== req.query.email) {
+        return res.status(403).send({ message: "forbidden access" });
+      }
+      let query = {};
+      if (req.query.email) {
+        query = { email: req.query.email };
+      }
+
+      const id = req.params.id;
+      console.log(id);
+      const queryId = { _id: new ObjectId(id) };
+      const result = await foodRequestCollection.findOne(queryId);
+      res.send(result);
+    });
+
+    app.post("/foods", async (req, res) => {
+      const newFood = req.body;
+      console.log(newFood);
+      const result = await foodCollection.insertOne(newFood);
+      res.send(result);
+    });
     await client.db("admin").command({ ping: 1 });
     console.log("Pinged your deployment. You successfully connected to MongoDB!");
   } finally {
